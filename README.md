@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cilantro Labs — marketing site
 
-## Getting Started
+The public marketing site for [cilantro-labs.com](https://cilantro-labs.com).
 
-First, run the development server:
+Stack: **Next.js 16 (App Router) · TypeScript · Tailwind v4 · Framer Motion · Lucide**.
+Designed to deploy to **Vercel** with zero config.
+
+---
+
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build production bundle:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build && npm start
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Deploying to Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+You have two paths. Pick the one you prefer.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### A. Push to GitHub, import in Vercel (recommended)
 
-## Deploy on Vercel
+1. Create a new repo on GitHub and push this directory.
+2. Go to <https://vercel.com/new> and import the repo.
+3. Framework preset is auto-detected as **Next.js**. Leave defaults.
+4. Click **Deploy**. First deploy takes ~1 minute.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### B. Vercel CLI (no GitHub required)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm i -g vercel
+vercel              # first run links the project
+vercel --prod       # ship to production
+```
+
+---
+
+## Pointing `cilantro-labs.com` at Vercel
+
+After the first successful deploy:
+
+1. In the Vercel dashboard → your project → **Settings → Domains**.
+2. Add `cilantro-labs.com` and `www.cilantro-labs.com`.
+3. Vercel will display the DNS records you need to set with your registrar:
+
+   **Apex (`cilantro-labs.com`)** — A record:
+
+   | Type | Name | Value |
+   |------|------|-------|
+   | A    | @    | `76.76.21.21` |
+
+   **WWW (`www.cilantro-labs.com`)** — CNAME:
+
+   | Type  | Name | Value |
+   |-------|------|-------|
+   | CNAME | www  | `cname.vercel-dns.com` |
+
+4. Save the records at your DNS provider. Propagation usually completes in a few minutes; SSL certs are issued automatically by Vercel.
+5. Set `cilantro-labs.com` as the primary domain (Vercel will redirect `www` → apex).
+
+> If you already have email on this domain (Google Workspace, etc.), do **not** touch the existing `MX` records — only add the `A` and `CNAME` above.
+
+---
+
+## Project layout
+
+```
+src/
+  app/
+    layout.tsx              # root layout, metadata, fonts
+    page.tsx                # composes the landing page
+    globals.css             # design tokens (dark theme + accent)
+    opengraph-image.tsx     # auto-generated 1200x630 OG image
+    sitemap.ts / robots.ts  # SEO basics
+    api/waitlist/route.ts   # POST endpoint for the email form
+  components/
+    nav.tsx hero.tsx pillars.tsx why.tsx how.tsx cta.tsx footer.tsx
+    waitlist-form.tsx logo.tsx
+```
+
+---
+
+## Wiring the waitlist form to a real provider
+
+Right now `src/app/api/waitlist/route.ts` validates the email and `console.log`s it (visible in Vercel function logs). When you pick an email tool, swap the `console.log` for an API call. Two easy options:
+
+**Resend (audiences):**
+
+```ts
+await fetch("https://api.resend.com/audiences/<id>/contacts", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ email }),
+});
+```
+
+**Loops:**
+
+```ts
+await fetch("https://app.loops.so/api/v1/contacts/create", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.LOOPS_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ email }),
+});
+```
+
+Add the key in Vercel → **Settings → Environment Variables**, then redeploy.
+
+---
+
+## Editing copy
+
+All public copy lives in the components under `src/components/`. The site intentionally keeps product details abstract — see the project notes before adding anything that names specific automation features.
