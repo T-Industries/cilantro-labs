@@ -13,10 +13,10 @@ export function Footer() {
         </div>
         <div className="flex flex-col items-start gap-2 text-xs text-muted sm:items-end">
           <a
-            href="mailto:hello@cilantro-labs.com"
+            href="mailto:gpwc@bluecilantro.ca"
             className="transition-colors hover:text-foreground"
           >
-            hello@cilantro-labs.com
+            gpwc@bluecilantro.ca
           </a>
           <span>© {year} Cilantro Labs. All rights reserved.</span>
         </div>

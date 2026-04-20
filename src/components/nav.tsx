@@ -25,12 +25,6 @@ export function Nav() {
             </a>
           ))}
         </nav>
-        <a
-          href="#waitlist"
-          className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
-        >
-          Join waitlist
-        </a>
       </div>
     </header>
   );

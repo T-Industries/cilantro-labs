@@ -82,45 +82,9 @@ src/
     globals.css             # design tokens (dark theme + accent)
     opengraph-image.tsx     # auto-generated 1200x630 OG image
     sitemap.ts / robots.ts  # SEO basics
-    api/waitlist/route.ts   # POST endpoint for the email form
   components/
-    nav.tsx hero.tsx pillars.tsx why.tsx how.tsx cta.tsx footer.tsx
-    waitlist-form.tsx logo.tsx
+    nav.tsx hero.tsx pillars.tsx why.tsx how.tsx footer.tsx logo.tsx
 ```
-
----
-
-## Wiring the waitlist form to a real provider
-
-Right now `src/app/api/waitlist/route.ts` validates the email and `console.log`s it (visible in Vercel function logs). When you pick an email tool, swap the `console.log` for an API call. Two easy options:
-
-**Resend (audiences):**
-
-```ts
-await fetch("https://api.resend.com/audiences/<id>/contacts", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ email }),
-});
-```
-
-**Loops:**
-
-```ts
-await fetch("https://app.loops.so/api/v1/contacts/create", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${process.env.LOOPS_API_KEY}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ email }),
-});
-```
-
-Add the key in Vercel → **Settings → Environment Variables**, then redeploy.
 
 ---
 
