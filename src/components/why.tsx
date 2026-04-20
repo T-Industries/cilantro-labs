@@ -33,7 +33,7 @@ export function Why() {
       <div className="mx-auto max-w-6xl px-5">
         <SectionHeader
           eyebrow="Why Cilantro Labs"
-          title="We built the AI team you wish you could hire."
+          title="We're building the AI team you wish you could hire."
           subtitle="Restaurants don't need more software. They need fewer things on the owner's plate. That's the whole point."
         />
 
